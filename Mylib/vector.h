@@ -1,8 +1,8 @@
 typedef int Rank;
-#define DEFYAULT_CAPACITY  3 //默认的初始容量（实际应用中可设置为更大）
-
+#define DEFAULT_CAPACITY  3 //默认的初始容量（实际应用中可设置为更大）
+#include <algorithm>
 template <typename T> class Vector { //向量模版类 
-protected:
+public:
 	Rank _size; int _capacity; T* _elem; //规模、容量、数据区 
 	void copyFrom(T const*A, Rank lo, Rank hi );//复制数组区间 
 	void expand();//空间不足时扩容 
@@ -18,10 +18,10 @@ protected:
 	void heapSort( Rank lo, Rank hi );//堆排序(稍后结合完全堆讲解) 
 public:
 //构造函数
-    Vector( int c= DEFAULT_CAPACITY,int s = 0,T v = 0)//容量为c、规模为s、所有元素初始为v 
+    Vector( int c = DEFAULT_CAPACITY, int s = 0,T v = 0)//容量为c、规模为s、所有元素初始为v 
 	{ _elem = new T[_capacity = c]; for ( _size = 0; _size < s; _elem[_size++] = v);}//s<=c	
     Vector ( T const* A, Rank n) { copyFrom ( A, 0, n ); }//数组整体复制
-	Vector ( T const* A, Rank lo, Rank hi ) { copyFrom (V._elem, lo, hi ); }//区间
+	Vector ( T const* A, Rank lo, Rank hi ) { copyFrom ( A, lo, hi ); }//区间
 	Vector ( Vector<T> const& V ){ copyFrom (V._elem, 0, V._size ); }//向量整体复制
 	Vector ( Vector<T> const& V, Rank lo, Rank hi ) { copyFrom (V._elem, lo, hi ); }//区间
 //析构函数
@@ -94,7 +94,7 @@ template <typename T> void Vector<T>::shrink(){ // 装填因子过小时压缩�
 // 2.7向量整体置乱算法permute()
 template <typename T> void permute(Vector<T> &V) {// 随机置乱向量，使各元素等概率出现于各位置
     for (int i = V.size(); i > 0; i--) // 自后向前
-        swap(V[i - 1], V[rand() % i]); // v[i-1]与v[0,1)中某一随机元素交换
+        std::swap(V[i - 1], V[rand() % i]); // v[i-1]与v[0,1)中某一随机元素交换
 }
 
 // 2.8向量区间置乱接口unsort()
@@ -201,16 +201,16 @@ template <typename T> int Vector<T>::uniquify(){// 有序向量重复元素剔�
  }
 
 // 2.19有序向量uniquify()接口的高效实现
-template <typename T> int Vector<T>::uniquify()
-{    // 有序向量重复元素剔除算法(高效版)
-    Rank i = 0, j = 0;    // 各对互异"相邻"元素的秩
-    while (++j < _size)    // 逐一扫描，直至末元素
-    if (_elem[i] != _elem[j])  // 跳过雷同者
-    _elem[++i] = _elem[j]; // 发现不同元素时，向前移至紧邻于前者右侧
-    _size = ++i;
-    shrink();   // 直接截除尾部多余元素
-    return j - i; // 向量规模变化量，即被删除元素总数
-}
+//template <typename T> int Vector<T>::uniquify()
+//{    // 有序向量重复元素剔除算法(高效版)
+ //   Rank i = 0, j = 0;    // 各对互异"相邻"元素的秩
+ //   while (++j < _size)    // 逐一扫描，直至末元素
+ //   if (_elem[i] != _elem[j])  // 跳过雷同者
+ //   _elem[++i] = _elem[j]; // 发现不同元素时，向前移至紧邻于前者右侧
+ //   _size = ++i;
+ //   shrink();   // 直接截除尾部多余元素
+ //   return j - i; // 向量规模变化量，即被删除元素总数
+//}
 
 // 2.20有序向量各种查找算法的统一search()接口
 template <typename T>    // 在有序向量的区间[hi,hi]内，确定不大于e的最后一个节点的秩
@@ -240,47 +240,47 @@ static Rank binSearch(T *A, T const &e, Rank lo, Rank hi)
 
 // // 2.23二分查找算法(版本B):在有序向量区间[lo,hi]内查找元素e，0<lo<=hi<+_size
 
-template <typename T>
+//template <typename T>
 
-static Rank binSearch(T *A, T const &e, Rank lo, Rank hi)
+//static Rank binSearch(T *A, T const &e, Rank lo, Rank hi)
 
- {
+// {
 
- while (1 < hi - lo) // 每步迭代仅需做一次比较判断，有两个分支；成功查找不能提前终止
+ //while (1 < hi - lo) // 每步迭代仅需做一次比较判断，有两个分支；成功查找不能提前终止
 
- {
+ //{
 
-  Rank mi = (lo + hi) >> 1;  // 以中点为轴点
+  //Rank mi = (lo + hi) >> 1;  // 以中点为轴点
 
- (e < A[mi]) ? hi = mi : lo = mi; // 经比较后确定深入[lo,mi]或[mi,hi]
+ //(e < A[mi]) ? hi = mi : lo = mi; // 经比较后确定深入[lo,mi]或[mi,hi]
 
- }
+ //}
 
-  return (e == A[lo]) ? lo : -1; // 查找成功时返回对应的秩；否则统一返回-1
+ // return (e == A[lo]) ? lo : -1; // 查找成功时返回对应的秩；否则统一返回-1
 
- } // 有多个元素命中时，不能保证返回秩最大者；查找失败时，简单地返回-1，而不能指示失败位置
-
+ //} // 有多个元素命中时，不能保证返回秩最大者；查找失败时，简单地返回-1，而不能指示失败位
 
 
 //  2.24二分查找算法(版本C):在有序向量区间[lo,hi]内查找元素e，0<lo<=hi<+_size
 
-template <typename T>
+//template <typename T>
 
-static Rank binSearch(T *A, T const &e, Rank lo, Rank hi)
+//static Rank binSearch(T *A, T const &e, Rank lo, Rank hi)
 
-{
+//{
 
- while (lo < hi) // 每步迭代仅需做一次比较判断，有两个分支
+ //while (lo < hi) // 每步迭代仅需做一次比较判断，有两个分支
 
- {
-  Rank mi = (lo + hi) >> 1;  // 以中点为轴点
+ //{
+ // Rank mi = (lo + hi) >> 1;  // 以中点为轴点
 
-(e < A[mi]) ? hi = mi : lo = mi + 1; // 经比较后确定深入[lo,mi]或[mi,hi]
-  } // 循环结束时，lo为大于e的元素的最小秩，故lo-1即不大于e的元素的最大秩
+//(e < A[mi]) ? hi = mi : lo = mi + 1; // 经比较后确定深入[lo,mi]或[mi,hi]
+ // } // 循环结束时，lo为大于e的元素的最小秩，故lo-1即不大于e的元素的最大秩
 
-  return --lo; // 有多个命中元素时，总能保证返回秩最大者；查找失败时，能够返回失败的位置
+//  return --lo; // 有多个命中元素时，总能保证返回秩最大者；查找失败时，能够返回失败的位置
 
- }
+// }
+
 
 
 // 2.22
@@ -321,6 +321,7 @@ static Rank binSearch(T *A, T const &e, Rank lo, Rank hi)
 //  return -1;
 
 // }
+
 
 
 // 2.25向量排序器接口
@@ -387,16 +388,16 @@ void Vector<T>::merge(Rank lo, Rank mi, Rank hi)
 T *A = _elem + lo; // 合并后的向量A[0, hi - lo] = _elem[lo,mi]
 int lb = mi - lo;
 T *B = new T[lb]; // 前子向量B[0,lb] = _elem[lo,mi]
-for (Rank i = 0; i < lb; B[i] = A[i++])
-; // 复制前子向量
+for (Rank i = 0; i < lb; B[i] = A[i++]); // 复制前子向量
 int lc = hi - mi;
 T *C = _elem + mi; // 后子向量c[0,lc] = _elem[mi,hi]
 for (Rank i = 0, j = 0, k = 0; (j < lb) || (k < lc);)
 { // 将b[j]和C[k]中的小者续至末尾
-if ((j < lb) && (!(k < lc) || (B[j] <= C[k])))
+if ((j < lb) && (!(k < lc) || (B[j] < C[k])))
 A[i++] = B[j++];
 if ((k < lc) && (!(j < lb) || (C[k] < B[j])))
 A[i++] = C[k++];
 }
 // delete[] B; // 释放临时空间B
 } // 归并后得到完整的有序向量[lo,hi]
+	
