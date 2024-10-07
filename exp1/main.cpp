@@ -3,15 +3,20 @@
 #include <cmath>
 #include <cstdlib>
 #include <ctime>
-
+#include <algorithm>
 
 class Complex {
-private:
+public:
     double real;
     double imag;
-
-public:
     Complex(double r = 0.0, double i = 0.0) : real(r), imag(i) {}
+    bool operator!=(const Complex& other) const {
+        return !(*this == other);
+    }
+
+    bool operator>(const Complex& other) const {
+        return modulus() > other.modulus();
+    }
 
     double modulus() const {
         return std::sqrt(real * real + imag * imag);
@@ -42,6 +47,45 @@ public:
     }
 };
 
+bool compare(const Complex& a, const Complex& b) {
+	if(a.modulus() == b.modulus()) {
+		return a.real < b.real;
+	}
+	return a.modulus() < b.modulus();
+}
+
+void merge(Vector<Complex>& v, Vector<Complex>& left, Vector<Complex>& right) {
+	int i = 0, j = 0, k = 0;
+	while (i < left.size() && j < right.size()) {
+		if (compare(left[i], right[j])) {
+			v[k++] = left[i++];
+		} else {
+			v[k++] = right[j++];
+		}
+	}
+	while (i < left.size()) {
+		v[k++] = left[i++];
+	}
+	while (j < right.size()) {
+		v[k++] = right[j++];
+	}
+}
+
+void mergeSort(Vector<Complex>& v) {
+	if (v.size() <= 1) {
+		return;
+	}
+	Vector<Complex> left, right;
+	for (int i = 0; i < v.size() / 2; i++) {
+		left.insert(i, v[i]);
+	}
+	for (int i = v.size() / 2; i < v.size(); i++) {
+		right.insert(i - v.size() / 2, v[i]);
+	}
+	mergeSort(left);
+	mergeSort(right);
+	merge(v, left, right);
+}
 
 int main() {
     // 创建一个复数向量
@@ -96,7 +140,7 @@ int main() {
 
     // 测试归并排序
     start = clock();
-    complex_vector.mergeSort(0, complex_vector.size() - 1);
+    mergeSort(complex_vector);
     end = clock();
 
     double merge_time = double(end - start) / CLOCKS_PER_SEC;
@@ -106,7 +150,7 @@ int main() {
     std::cout << "Merge sort time: " << merge_time << " seconds" << std::endl;
 
     // 测试区间查找
-    Vector<Complex> result = complex_vector.search(Complex(5, 0), Complex(10, 0), 0, complex_vector.size());
+    Vector<Complex> result = complex_vector.find(Complex(5, 0));
     std::cout << "Range search result:" << std::endl;
     result.traverse([](Complex& c) { std::cout << c << " "; });
     std::cout << std::endl;
