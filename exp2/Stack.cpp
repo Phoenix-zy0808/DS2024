@@ -1,4 +1,4 @@
-#include "E:\homework\vs\Vector.cpp\vector.h"  // 假设你已经有一个可用的 Vector 实现
+#include "Mylib/vector.h"  // 假设你已经有一个可用的 Vector 实现
 template <typename T>
 class Stack : public Vector<T> {
 public:
