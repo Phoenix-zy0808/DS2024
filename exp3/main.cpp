@@ -147,7 +147,7 @@ void writeFile(const std::string &filename, const std::string &encodedText)
 // 主函数
 int main()
 {
-    std::string inputFileName = "word.txt"; // 输入文件名
+    std::string inputFileName = "speech.txt"; // 输入文件名
 
     // 从文件读取文本内容
     std::string text = readFile(inputFileName);
